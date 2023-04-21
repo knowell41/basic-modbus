@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "basic-modbus"
+version = "0.1.0"
+description = "basic modbus polling rtu"
+authors = ["Emmanuel Rustia Pagayonan <emmanuel_pagayonan_28@yahoo.com>"]
+readme = "README.md"
+packages = [{include = "poetry_demo"}]
+
+[tool.poetry.dependencies]
+python = "^3.10.10"
+pymodbus = "3.2.2"
+pyserial = "3.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
