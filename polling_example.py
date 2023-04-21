@@ -10,14 +10,14 @@ Sends modbus request to read coils of each RTU,
 
 
 server = ModbusPoll("COM8", scan_rate=0, timeout=0.5)
-server.add_rtu("device_1", 1, 0, 4)
+server.add_rtu(rtu_name="device_1", slave_id=1, address=0, quantity=4)
 # server.add_rtu("device_2",2,0,4)
 
-server.__enter__() # start pollin rtu
-prev = None        # initial value
+server.__enter__() # start polling rtu
 
 # loop forever
 # coil_state = False
+prev = None        # initial value
 while True:      
     try:
         current_readings = server.rtu_readings.copy()
@@ -25,16 +25,7 @@ while True:
             print(current_readings)
             prev = current_readings.copy()
 
-        # wacth for failed modbus poll
-        # if server.error:
-        #     print(server.error)
-        #     server.error = None
-
-        # blocking function to write state to coil
-        # server.write_coil(address=0, value=coil_state, slave_id=1)
-
-        # invert coil_state to make it blink
-        # coil_state = not coil_state
+            ## do your logic here
 
     except (ModbusPollError, Exception) as e:
        server.__exit__() 

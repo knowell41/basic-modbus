@@ -6,28 +6,40 @@ This project is aims to explore functionality of existing python modbus implemen
 https://user-images.githubusercontent.com/45946492/233665072-9400698e-252a-4385-93af-19e86dd43dce.mp4
 
 
-# Sample code
+# Examples
+
+## polling_example.py
+
+Import modules
+
 ```
 # polling_example.py
 
 from basic_modbus.modbus_poll import ModbusPoll, ModbusPollError
 import traceback
 import time
+```
 
-"""
-Sends modbus request to read coils of each RTU,
-"""
-
-
+Initialize modbus communication
+```
 server = ModbusPoll("COM8", scan_rate=0, timeout=0.5)
-server.add_rtu("device_1", 1, 0, 4)
+```
+
+Add RTU
+```
+server.add_rtu(rtu_name="device_1", slave_id=1, address=0, quantity=4)
 # server.add_rtu("device_2",2,0,4)
+```
+Start watching coil state
+```
+server.__enter__() # start polling rtu
+```
 
-server.__enter__() # start pollin rtu
-prev = None        # initial value
-
+Loop: Watch change in values in `server.rtu_readings`
+```
 # loop forever
 # coil_state = False
+prev = None        # initial value
 while True:      
     try:
         current_readings = server.rtu_readings.copy()
@@ -35,21 +47,30 @@ while True:
             print(current_readings)
             prev = current_readings.copy()
 
-        # wacth for failed modbus poll
-        # if server.error:
-        #     print(server.error)
-        #     server.error = None
-
-        # blocking function to write state to coil
-        # server.write_coil(address=0, value=coil_state, slave_id=1)
-
-        # invert coil_state to make it blink
-        # coil_state = not coil_state
+            ## do your logic here
 
     except (ModbusPollError, Exception) as e:
        server.__exit__() 
        break
 
+```
+## Write coil state
+
+import `ModbusPoll`
+```
+from basic_modbus.modbus_poll import ModbusPoll
+```
+Initialize Modbus comminication
 
 ```
+server = ModbusPoll("COM8", scan_rate=0, timeout=0.5)
+```
 
+Send command to target RTU
+```
+server.write_coil(
+    address=0, # coil address
+    value=True, # coil state True=On | False=Off
+    slave_id=1 # RTU slave address
+)
+```
