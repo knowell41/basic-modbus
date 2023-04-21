@@ -4,7 +4,7 @@ This project is aims to explore functionality of existing python modbus implemen
 
 # Demo
 
-![demo](./Demo.mp4)
+![demo](https://github.com/knowell41/basic-modbus/blob/dev/Demo.mp4)
 
 # Sample code
 ```
