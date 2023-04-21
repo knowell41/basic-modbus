@@ -10,8 +10,6 @@ packages = [{include = "poetry_demo"}]
 python = "^3.10.10"
 pymodbus = "3.2.2"
 pyserial = "3.5"
-basic-modbus  = { git = "https://github.com/knowell41/basic-modbus.git", branch = "dev" }
-
 
 [build-system]
 requires = ["poetry-core"]

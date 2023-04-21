@@ -19,6 +19,8 @@ WRITE_REGISTERS = 16
 REPORT_SERVER_ID = 17
 READ_COILS = 1
 
+class ModbusPollError(Exception):
+    pass
 
 class ModbusPoll:
     def __init__(self, port:str, baudrate:int=9600, timeout:float=0.5, scan_rate:float=0.5):
@@ -32,11 +34,14 @@ class ModbusPoll:
         self.baudrate = baudrate
         self.timeout = timeout
         self.scan_rate = scan_rate
+
+        
         self.rtu = []
         self.rtu_readings = []
         self.running = False
         self.client = ModbusSerialClient(self.port, baudrate=self.baudrate, timeout=self.timeout)
         self.write_to_coil = None
+        self.error = None
 
     def disconnect_serial(self):
         """**disconnecT_serial**
@@ -55,7 +60,6 @@ class ModbusPoll:
     def add_rtu(self, rtu_name:str, slave_id:int, address:int, quantity:int):
         """**add_rtu**
         Adds RTU to poll.
-
         :param rtu_name: Name of the RTU.
         :param slave_id: Slave ID.
         :param address: Coil start address.
@@ -73,7 +77,13 @@ class ModbusPoll:
         })
         return True, f"RTU with slave_id {slave_id} added successfully."
     
-
+    def write_coil(self, address:int, value:bool, slave_id:int)->None:
+        """**write_coil**
+        Blocking function to write coil state
+        """
+        self.write_to_coil = (address, value, slave_id)
+        while self.write_to_coil != None:
+            pass
 
     def poll(self):
         """**poll**
@@ -84,14 +94,18 @@ class ModbusPoll:
         cmd = dict()
         for rtu in self.rtu:
             cmd[rtu["name"]] = (rtu["address"], rtu["quantity"], rtu["slave_id"])
-
+        last_readings = []
         while self.running:
             response = {}
             for key in cmd.keys():
                 try:
-                    response[key] = self.client.read_coils(cmd[key][0], cmd[key][1],cmd[key][2] ).bits
-                except:
-                    response[key] = []
+                    last_readings =  self.client.read_coils(cmd[key][0], cmd[key][1],cmd[key][2] ).bits
+                    response[key] = last_readings
+                    self.error = None
+                except Exception as e:
+                    response[key] = last_readings
+                    self.error = e
+                    
                     
             self.rtu_readings = response.copy()
             if self.write_to_coil:
