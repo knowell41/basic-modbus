@@ -2,9 +2,9 @@
 
 This project is aims to explore functionality of existing python modbus implementation [pymodbus](https://pymodbus.readthedocs.io/en/latest/index.html).
 
-# Demo
+# [Demo](https://www.youtube.com/watch?v=SIxGnylKciE)
+https://user-images.githubusercontent.com/45946492/233665072-9400698e-252a-4385-93af-19e86dd43dce.mp4
 
-![demo](https://github.com/knowell41/basic-modbus/blob/dev/Demo.mp4)
 
 # Sample code
 ```
@@ -52,3 +52,4 @@ while True:
 
 
 ```
+
