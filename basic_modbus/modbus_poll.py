@@ -9,7 +9,7 @@ from pymodbus.exceptions import ModbusException, NoSuchSlaveException, ModbusIOE
 import time
 import threading
 import logging
-
+from typing import Any, List, Tuple, Union
 
 
 WRITE_SINGLE_COIL = 5
@@ -41,6 +41,7 @@ class ModbusPoll:
         self.running = False
         self.client = ModbusSerialClient(self.port, baudrate=self.baudrate, timeout=self.timeout)
         self.write_to_coil = None
+        self.write_multiple_coil_value = None
         self.error = None
 
     def disconnect_serial(self):
@@ -85,6 +86,25 @@ class ModbusPoll:
         while self.write_to_coil != None:
             pass
 
+    def write_multiple_coils(self,
+        address: int,
+        values: Union[List[bool], bool],
+        slave: int = 0)->None:
+        """Write coils (code 0x0F).
+
+        :param address: Start address to write to
+        :param values: List of booleans to write, or a single boolean to write
+        :param slave: (optional) Modbus slave ID
+        :param kwargs: (optional) Experimental parameters.
+        :raises ModbusException:
+        """
+
+        self.write_multiple_coil_value = (address, values, slave)
+
+        while self.write_multiple_coil_value != None:
+            pass
+        
+
     def poll(self):
         """**poll**
         Polling registered rtu with frequency defined by scan_rate
@@ -111,6 +131,10 @@ class ModbusPoll:
             if self.write_to_coil:
                 self.client.write_coil(self.write_to_coil[0], self.write_to_coil[1], self.write_to_coil[2])
                 self.write_to_coil = None
+            elif self.write_multiple_coil_value:
+                self.client.write_coils(self.write_multiple_coil_value[0], self.write_multiple_coil_value[1], self.write_multiple_coil_value[2])
+                self.write_multiple_coil_value = None
+
             time.sleep(self.scan_rate)
 
     def __enter__(self):
